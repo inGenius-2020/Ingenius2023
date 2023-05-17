@@ -16,6 +16,7 @@ import (
 func main() {
 	database.GetDatabaseConnection() //Migrations
 	log.Println("Starting backend services...")
+	database.TestDocs()
 	r := gin.Default()
 	r.Use(cors.Default())
 	r.Use(cors.New(cors.Config{AllowOrigins: []string{"*"}}))
@@ -64,6 +65,17 @@ func main() {
 				}
 			}
 		} else {
+			if fulluserrecord.SRN == b.SRN {
+				_, message, httpstatus, status, err := authentication.GenerateQR(*fulluserrecord)
+				if status == false {
+					log.Println(err)
+					c.JSON(httpstatus, gin.H{
+						"status":  false,
+						"message": message,
+						"error":   err,
+					})
+				}
+			}
 			c.JSON(http.StatusForbidden, gin.H{
 				"status":  false,
 				"message": "Invalid User record!",
@@ -82,7 +94,7 @@ func main() {
 			})
 			return
 		}
-		message, httpstatus, status:= database.CreateUserRecord(b)
+		message, httpstatus, status := database.CreateUserRecord(b)
 		if status {
 			c.JSON(httpstatus, gin.H{
 				"status":  status,

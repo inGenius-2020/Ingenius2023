@@ -44,6 +44,18 @@ func GetDatabaseConnection() (*gorm.DB, error) {
 	return db, nil
 }
 
+func TestDocs(){
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		log.Println(err)
+      return
+	}
+   where_cond := User{
+      Phone : "82177803098",
+   }
+   db.Debug().Model(&where_cond).Update("Name","Test");
+}
+
 func CreateUserRecord(b communication.UserInitRequest) (string, int, bool) {
 	db, err := GetDatabaseConnection()
 	if err != nil {
